@@ -49,7 +49,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'dbi'
   spec.add_development_dependency 'activerecord', '~> 4.0'
   spec.add_development_dependency 'mechanize'
-  # issue : https://github.com/SciRuby/daru/issues/493 occured 
+  # issue : https://github.com/SciRuby/daru/issues/493 occured
   # with latest version of sqlite3
   spec.add_development_dependency  'sqlite3', '~> 1.3.13'
   spec.add_development_dependency 'rubocop', '~> 0.49.0'
@@ -58,12 +58,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'gruff'
   spec.add_development_dependency 'webmock'
 
-  if RUBY_VERSION < '2.1.0'
-    spec.add_development_dependency 'nokogiri', '<= 1.6.8.1'
-  else
-    spec.add_development_dependency 'nokogiri'
-  end
-  if RUBY_VERSION >= '2.2.5'
-    spec.add_development_dependency 'guard-rspec'
-  end
+  spec.add_dependency "nokogiri", ">= 1.10.4"
+  spec.add_development_dependency 'guard-rspec'
 end
