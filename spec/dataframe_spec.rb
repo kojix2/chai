@@ -2373,16 +2373,6 @@ describe Daru::DataFrame do
     end
   end
 
-  context "#recast" do
-    it "recasts underlying vectors" do
-      @data_frame.recast a: :nmatrix, c: :nmatrix
-
-      expect(@data_frame.a.dtype).to eq(:nmatrix)
-      expect(@data_frame.b.dtype).to eq(:array)
-      expect(@data_frame.c.dtype).to eq(:nmatrix)
-    end
-  end
-
   context "#sort" do
     context Daru::Index do
       before :each do
@@ -2807,25 +2797,6 @@ describe Daru::DataFrame do
         [4,14,44,2],
         [5,15,55,1]
       ])
-    end
-  end
-
-  context "#to_nmatrix" do
-    before do
-      @df = Daru::DataFrame.new({b: [11,12,13,14,15], a: [1,2,3,4,5],
-        c: [11,22,33,44,55], d: [5,4,nil,2,1], e: ['this', 'has', 'string','data','too']},
-        order: [:a, :b, :c,:d,:e],
-        index: [:one, :two, :three, :four, :five])
-    end
-
-    it "concats numeric non-nil vectors to NMatrix" do
-      expect(@df.to_nmatrix).to eq(NMatrix.new([5,3],
-        [1,11,11,
-         2,12,22,
-         3,13,33,
-         4,14,44,
-         5,15,55]
-      ))
     end
   end
 

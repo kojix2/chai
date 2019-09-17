@@ -83,12 +83,6 @@ describe Daru::Vector do
           expect(dv.to_a).to eq([1,2,3,4])
           expect(dv.index.to_a).to eq(['a', 'b', :r, 0])
         end
-
-        it "initializes array with nils with dtype NMatrix" do
-          dv = Daru::Vector.new [2, nil], dtype: :nmatrix
-          expect(dv.to_a).to eq([2, nil])
-          expect(dv.index.to_a).to eq([0, 1])
-        end
       end
 
       context "#reorder!" do
@@ -120,7 +114,7 @@ describe Daru::Vector do
           v1 = Daru::Vector.new 10.times.map { nil }, dtype: dtype
           v2 = Daru::Vector.new_with_size 10, dtype: dtype
           expect(v2).to eq(v1)
-        end if [:array, :nmatrix].include?(dtype)
+        end if [:array].include?(dtype)
 
         it "creates new vector from only size and value" do
           a = rand
@@ -1348,13 +1342,6 @@ describe Daru::Vector do
           expect(a).to eq(exp)
           expect(a.dtype).to eq(:gsl)
         end
-
-        it "maps and returns a vector of dtype nmatrix" do
-          a = @common_all_dtypes.recode(:nmatrix) { |v| v == -99 ? 1 : 0 }
-          exp = Daru::Vector.new [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], dtype: :nmatrix
-          expect(a).to eq(exp)
-          expect(a.dtype).to eq(:nmatrix)
-        end
       end
 
       context "#recode!" do
@@ -1374,13 +1361,6 @@ describe Daru::Vector do
         it "destructively maps and returns a vector of dtype gsl" do
           @vector.recode!(:gsl) { |v| v == -99 ? 1 : 0 }
           exp = Daru::Vector.new [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], dtype: :gsl
-          expect(@vector).to eq(exp)
-          expect(@vector.dtype).to eq(exp.dtype)
-        end
-
-        it "destructively maps and returns a vector of dtype nmatrix" do
-          @vector.recode!(:nmatrix) { |v| v == -99 ? 1 : 0 }
-          exp = Daru::Vector.new [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], dtype: :nmatrix
           expect(@vector).to eq(exp)
           expect(@vector.dtype).to eq(exp.dtype)
         end
@@ -1408,29 +1388,27 @@ describe Daru::Vector do
           it { is_expected.to include "non-missing:#{dv.size - dv.count_values(*Daru::MISSING_VALUES)}" }
         end
 
-        unless dtype == :nmatrix
-          context "numeric type" do
-            let(:dv) { Daru::Vector.new([1,2,5], name: 'numeric') }
+        context "numeric type" do
+          let(:dv) { Daru::Vector.new([1,2,5], name: 'numeric') }
 
-            it { is_expected. to eq %Q{
-                |= numeric
-                |  n :3
-                |  non-missing:3
-                |  median: 2
-                |  mean: 2.6667
-                |  std.dev.: 2.0817
-                |  std.err.: 1.2019
-                |  skew: 0.2874
-                |  kurtosis: -2.3333
-              }.unindent }
-          end
+          it { is_expected. to eq %Q{
+              |= numeric
+              |  n :3
+              |  non-missing:3
+              |  median: 2
+              |  mean: 2.6667
+              |  std.dev.: 2.0817
+              |  std.err.: 1.2019
+              |  skew: 0.2874
+              |  kurtosis: -2.3333
+            }.unindent }
+        end
 
-          context "numeric type with missing values" do
-            let(:dv) { Daru::Vector.new([1,2,5,nil,Float::NAN], name: 'numeric') }
+        context "numeric type with missing values" do
+          let(:dv) { Daru::Vector.new([1,2,5,nil,Float::NAN], name: 'numeric') }
 
-            it { is_expected.not_to include 'skew' }
-            it { is_expected.not_to include 'kurtosis' }
-          end
+          it { is_expected.not_to include 'skew' }
+          it { is_expected.not_to include 'kurtosis' }
         end
 
         if dtype == :array
@@ -1839,11 +1817,6 @@ describe Daru::Vector do
       expect(@multi.type).to eq(:object)
     end
 
-    it "tells NMatrix data type in case of NMatrix wrapper" do
-      nm = Daru::Vector.new([1,2,3,4,5], dtype: :nmatrix)
-      expect(nm.type).to eq(:int32)
-    end
-
     it "changes type to object as per assignment" do
       expect(@numeric.type).to eq(:numeric)
       @numeric[2] = 'my string'
@@ -1887,35 +1860,6 @@ describe Daru::Vector do
 
     it 'raises on wrong axis' do
       expect { @vector.to_matrix(:strange) }.to raise_error(ArgumentError)
-    end
-  end
-
-  context '#to_nmatrix' do
-    let(:dv) { Daru::Vector.new [1, 2, 3, 4, 5] }
-
-    context 'horizontal axis' do
-      subject { dv.to_nmatrix }
-
-      it { is_expected.to be_a NMatrix }
-      its(:shape) { is_expected.to eq [1, 5] }
-      its(:to_a) { is_expected.to eq [1, 2, 3, 4, 5] }
-    end
-
-    context 'vertical axis' do
-      subject { dv.to_nmatrix :vertical }
-
-      it { is_expected.to be_a NMatrix }
-      its(:shape) { is_expected.to eq [5, 1] }
-      its(:to_a) { is_expected.to eq [1, 2, 3, 4, 5].map { |i| [i] } }
-    end
-
-    context 'invalid axis' do
-      it { expect { dv.to_nmatrix :hello }.to raise_error ArgumentError }
-    end
-
-    context 'vector contain non-numeric' do
-      let(:dv) { Daru::Vector.new [1, 2, nil, 4] }
-      it { expect { dv.to_nmatrix }.to raise_error ArgumentError }
     end
   end
 

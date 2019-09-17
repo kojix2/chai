@@ -30,15 +30,6 @@ class Hash
   alias_method :dv, :daru_vector
 end
 
-# :nocov:
-class NMatrix
-  def daru_vector(name=nil, index=nil, *)
-    Daru::Vector.new self, name: name, index: index, dtype: :nmatrix
-  end
-
-  alias_method :dv, :daru_vector
-end
-
 class MDArray
   def daru_vector(name=nil, index=nil, *)
     Daru::Vector.new self, name: name, index: index, dtype: :mdarray

@@ -2052,13 +2052,6 @@ module Daru
       Matrix.columns each_vector.select(&:numeric?).map(&:to_a)
     end
 
-    # Convert all vectors of type *:numeric* and not containing nils into an NMatrix.
-    def to_nmatrix
-      each_vector.select do |vector|
-        vector.numeric? && !vector.include_values?(*Daru::MISSING_VALUES)
-      end.map(&:to_a).transpose.to_nm
-    end
-
     # Converts the DataFrame into an array of hashes where key is vector name
     # and value is the corresponding element. The 0th index of the array contains
     # the array of hashes while the 1th index contains the indexes of each row
@@ -2200,17 +2193,6 @@ module Daru
         index: h[:index],
         order: h[:order],
         name:  h[:name])
-    end
-
-    # Change dtypes of vectors by supplying a hash of :vector_name => :new_dtype
-    #
-    # == Usage
-    #   df = Daru::DataFrame.new({a: [1,2,3], b: [1,2,3], c: [1,2,3]})
-    #   df.recast a: :nmatrix, c: :nmatrix
-    def recast opts={}
-      opts.each do |vector_name, dtype|
-        self[vector_name].cast(dtype: dtype)
-      end
     end
 
     # Transpose a DataFrame, tranposing elements and row, column indexing.

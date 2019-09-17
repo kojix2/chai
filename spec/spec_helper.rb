@@ -10,8 +10,6 @@ require 'nokogiri'
 require 'gruff'
 require 'webmock/rspec'
 
-require 'nmatrix/nmatrix'
-
 RSpec::Expectations.configuration.warn_about_potential_false_positives = false
 
 require 'simplecov'
@@ -25,7 +23,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'daru'
 
-ALL_DTYPES = [:nmatrix, :gsl, :array]
+ALL_DTYPES = [:gsl, :array]
 
 # FIXME: This must go! Need to be able to use be_within
 def expect_correct_vector_in_delta v1, v2, delta
