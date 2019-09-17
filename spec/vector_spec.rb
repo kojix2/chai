@@ -2208,4 +2208,4 @@ describe Daru::Vector do
       expect(v.where(v.lt(2))).to eq(Daru::Vector.new([1]))
     end
   end
-end if mri?
+end

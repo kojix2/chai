@@ -4216,4 +4216,4 @@ describe Daru::DataFrame do
       expect { df[:c] }.to raise_error(IndexError, /Specified vector c does not exist/)
     end
   end
-end if mri?
+end

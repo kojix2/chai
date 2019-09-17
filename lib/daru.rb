@@ -1,9 +1,3 @@
-# :nocov:
-def jruby?
-  RUBY_ENGINE == 'jruby'
-end
-# :nocov:
-
 module Daru
   DAYS_OF_WEEK = {
     'SUN' => 0,

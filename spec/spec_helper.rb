@@ -10,19 +10,7 @@ require 'nokogiri'
 require 'gruff'
 require 'webmock/rspec'
 
-def mri?
-  RUBY_ENGINE == 'ruby'
-end
-
-def jruby?
-  RUBY_ENGINE == 'jruby'
-end
-
-if jruby?
-  require 'mdarray'
-else
-  require 'nmatrix/nmatrix'
-end
+require 'nmatrix/nmatrix'
 
 RSpec::Expectations.configuration.warn_about_potential_false_positives = false
 
