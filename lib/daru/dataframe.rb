@@ -48,6 +48,7 @@ module Daru
       def from_csv path, opts={}, &block
         Daru::IO.from_csv path, opts, &block
       end
+      alias read_csv from_csv
 
       # Read data from an Excel file into a DataFrame.
       #
@@ -61,6 +62,7 @@ module Daru
       def from_excel path, opts={}, &block
         Daru::IO.from_excel path, opts, &block
       end
+      alias read_excel from_excel
 
       # Read a database query and returns a Dataset
       #
@@ -81,6 +83,7 @@ module Daru
       def from_sql dbh, query
         Daru::IO.from_sql dbh, query
       end
+      alias read_sql from_sql
 
       # Read a dataframe from AR::Relation
       #
@@ -101,6 +104,7 @@ module Daru
       def from_activerecord relation, *fields
         Daru::IO.from_activerecord relation, *fields
       end
+      alias read_activerecord from_activerecord
 
       # Read the database from a plaintext file. For this method to work,
       # the data should be present in a plain text file in columns. See
@@ -117,6 +121,7 @@ module Daru
       def from_plaintext path, fields
         Daru::IO.from_plaintext path, fields
       end
+      alias read_plaintext from_plaintext
 
       # Read the table data from a remote html file. Please note that this module
       # works only for static table elements on a HTML page, and won't work in
@@ -160,6 +165,7 @@ module Daru
       def from_html path, fields={}
         Daru::IO.from_html path, fields
       end
+      alias read_html from_html
 
       # Create DataFrame by specifying rows as an Array of Arrays or Array of
       # Daru::Vector objects.
