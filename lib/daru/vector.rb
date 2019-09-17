@@ -1,7 +1,6 @@
 require 'daru/maths/arithmetic/vector.rb'
 require 'daru/maths/statistics/vector.rb'
 require 'daru/plotting/gruff.rb'
-require 'daru/plotting/nyaplot.rb'
 require 'daru/accessors/array_wrapper.rb'
 require 'daru/accessors/nmatrix_wrapper.rb'
 require 'daru/accessors/gsl_wrapper.rb'
@@ -204,7 +203,7 @@ module Daru
 
     def plotting_library= lib
       case lib
-      when :gruff, :nyaplot
+      when :gruff
         @plotting_library = lib
         if Daru.send("has_#{lib}?".to_sym)
           extend Module.const_get(
@@ -213,7 +212,7 @@ module Daru
         end
       else
         raise ArgumentError, "Plotting library #{lib} not supported. "\
-          'Supported libraries are :nyaplot and :gruff'
+          'Supported libraries is :gruff'
       end
     end
 

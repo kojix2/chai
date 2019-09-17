@@ -61,7 +61,7 @@ module Daru
 
     def plotting_library= lib
       case lib
-      when :gruff, :nyaplot
+      when :gruff
         @plotting_library = lib
         if Daru.send("has_#{lib}?".to_sym)
           extend Module.const_get(
@@ -70,7 +70,7 @@ module Daru
         end
       else
         raise ArgumentError, "Plotting library #{lib} not supported. "\
-          'Supported libraries are :nyaplot and :gruff'
+          'Supported libraries is :gruff'
       end
     end
 

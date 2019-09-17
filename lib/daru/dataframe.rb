@@ -2,15 +2,12 @@ require 'daru/accessors/dataframe_by_row.rb'
 require 'daru/maths/arithmetic/dataframe.rb'
 require 'daru/maths/statistics/dataframe.rb'
 require 'daru/plotting/gruff.rb'
-require 'daru/plotting/nyaplot.rb'
 require 'daru/io/io.rb'
 
 module Daru
   class DataFrame # rubocop:disable Metrics/ClassLength
     include Daru::Maths::Arithmetic::DataFrame
     include Daru::Maths::Statistics::DataFrame
-    # TODO: Remove this line but its causing erros due to unkown reason
-    Daru.has_nyaplot?
 
     extend Gem::Deprecate
 
@@ -370,7 +367,7 @@ module Daru
 
     def plotting_library= lib
       case lib
-      when :gruff, :nyaplot
+      when :gruff
         @plotting_library = lib
         if Daru.send("has_#{lib}?".to_sym)
           extend Module.const_get(
@@ -379,7 +376,7 @@ module Daru
         end
       else
         raise ArgumentError, "Plotting library #{lib} not supported. "\
-          'Supported libraries are :nyaplot and :gruff'
+          'Supported libraries is :gruff'
       end
     end
 
@@ -2054,13 +2051,6 @@ module Daru
     def to_matrix
       Matrix.columns each_vector.select(&:numeric?).map(&:to_a)
     end
-
-    # Return a Nyaplot::DataFrame from the data of this DataFrame.
-    # :nocov:
-    def to_nyaplotdf
-      Nyaplot::DataFrame.new(to_a[0])
-    end
-    # :nocov:
 
     # Convert all vectors of type *:numeric* and not containing nils into an NMatrix.
     def to_nmatrix

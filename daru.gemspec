@@ -9,7 +9,7 @@ of data. Daru works seamlessly accross interpreters and leverages interpreter-sp
 optimizations whenever they are available.
 
 It is the default data storage gem for all the statsample gems (glm, timeseries, etc.)
-and can be used with many others like mixed_models, gnuplotrb, nyaplot and iruby.
+and can be used with many others like mixed_models, gnuplotrb, and iruby.
 MSG
 
 Gem::Specification.new do |spec|
@@ -38,7 +38,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.4'
   spec.add_development_dependency 'rspec-its'
   spec.add_development_dependency 'awesome_print'
-  spec.add_development_dependency 'nyaplot', '~> 0.1.5'
   spec.add_development_dependency 'nmatrix', '~> 0.2.1'
   spec.add_development_dependency 'distribution', '~> 0.7'
   spec.add_development_dependency 'gsl', '~>2.1.0.2'
