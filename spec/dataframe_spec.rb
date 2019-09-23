@@ -3180,14 +3180,6 @@ describe Daru::DataFrame do
     end
   end
 
-  context "#to_gsl" do
-    it "converts to GSL::Matrix" do
-      rows = [[1,2,3,4,5],[11,12,13,14,15],[11,22,33,44,55]].transpose
-      mat = GSL::Matrix.alloc *rows
-      expect(@data_frame.to_gsl).to eq(mat)
-    end
-  end
-
   context "#merge" do
     it "merges one dataframe with another" do
       a = Daru::Vector.new [1, 2, 3]

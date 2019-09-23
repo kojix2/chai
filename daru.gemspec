@@ -39,7 +39,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec-its'
   spec.add_development_dependency 'awesome_print'
   spec.add_development_dependency 'distribution', '~> 0.7'
-  spec.add_development_dependency 'gsl', '~>2.1.0.2'
   spec.add_development_dependency 'dbd-sqlite3'
   spec.add_development_dependency 'dbi'
   spec.add_development_dependency 'activerecord', '~> 4.0'

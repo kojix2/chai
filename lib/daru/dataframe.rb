@@ -2040,13 +2040,6 @@ module Daru
       self
     end
 
-    # Convert all numeric vectors to GSL::Matrix
-    def to_gsl
-      numerics_as_arrays = numeric_vectors.map { |n| self[n].to_a }
-
-      GSL::Matrix.alloc(*numerics_as_arrays.transpose)
-    end
-
     # Convert all vectors of type *:numeric* into a Matrix.
     def to_matrix
       Matrix.columns each_vector.select(&:numeric?).map(&:to_a)

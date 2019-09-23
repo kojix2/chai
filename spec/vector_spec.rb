@@ -1335,13 +1335,6 @@ describe Daru::Vector do
           expect(a).to eq(exp)
           expect(a.dtype).to eq(:array)
         end
-
-        it "maps and returns a vector of dtype gsl" do
-          a = @common_all_dtypes.recode(:gsl) { |v| v == -99 ? 1 : 0 }
-          exp = Daru::Vector.new [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], dtype: :gsl
-          expect(a).to eq(exp)
-          expect(a.dtype).to eq(:gsl)
-        end
       end
 
       context "#recode!" do
@@ -1356,13 +1349,6 @@ describe Daru::Vector do
           exp = Daru::Vector.new [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
           expect(@vector).to eq(exp)
           expect(@vector.dtype).to eq(dtype)
-        end
-
-        it "destructively maps and returns a vector of dtype gsl" do
-          @vector.recode!(:gsl) { |v| v == -99 ? 1 : 0 }
-          exp = Daru::Vector.new [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], dtype: :gsl
-          expect(@vector).to eq(exp)
-          expect(@vector.dtype).to eq(exp.dtype)
         end
       end
 
@@ -1551,17 +1537,6 @@ describe Daru::Vector do
       it { is_expected.to be_a Daru::Vector }
       its(:to_a) { is_expected.to eq [] }
       its(:'index.to_a') { is_expected.to eq [] }
-    end
-
-    context 'works for gsl' do
-      let(:dv) { Daru::Vector.new [1, 2, 3, Float::NAN], dtype: :gsl,
-        index: 11..14 }
-      subject { dv.reject_values Float::NAN }
-
-      it { is_expected.to be_a Daru::Vector }
-      its(:dtype) { is_expected.to eq :gsl }
-      its(:to_a) { is_expected.to eq [1, 2, 3].map(&:to_f) }
-      its(:'index.to_a') { is_expected.to eq [11, 12, 13] }
     end
 
     context 'test caching' do
@@ -1868,16 +1843,6 @@ describe Daru::Vector do
       v = Daru::Vector.new([1,2,nil,3,4,'s','a',nil])
       expect(v.only_numerics).to eq(Daru::Vector.new([1,2,nil,3,4,nil],
         index: [0,1,2,3,4,7]))
-    end
-  end
-
-  context "#to_gsl" do
-    it "returns a GSL::Vector of non-nil data" do
-      vector = Daru::Vector.new [1,2,3,4,nil,6,nil]
-      expect(vector.to_gsl).to eq(GSL::Vector.alloc(1,2,3,4,6))
-
-      gsl_vec = Daru::Vector.new [1,2,3,4,5], dtype: :gsl
-      expect(gsl_vec.to_gsl).to eq(GSL::Vector.alloc(1,2,3,4,5))
     end
   end
 

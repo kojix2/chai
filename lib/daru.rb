@@ -73,7 +73,6 @@ module Daru
     end
   end
 
-  create_has_library :gsl
   create_has_library :gruff
 end
 

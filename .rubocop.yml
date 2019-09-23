@@ -110,7 +110,6 @@ Style/Documentation:
 #  So, leaving them intact. - zverok, 2016-05-07
 Style/RescueModifier:
   Exclude:
-    - 'lib/daru/accessors/gsl_wrapper.rb'
     - 'lib/daru/dataframe.rb'
     - 'lib/daru/io/sql_data_source.rb'
 

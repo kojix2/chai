@@ -2,7 +2,6 @@ require 'daru/maths/arithmetic/vector.rb'
 require 'daru/maths/statistics/vector.rb'
 require 'daru/plotting/gruff.rb'
 require 'daru/accessors/array_wrapper.rb'
-require 'daru/accessors/gsl_wrapper.rb'
 require 'daru/category.rb'
 
 module Daru
@@ -135,7 +134,7 @@ module Daru
     attr_reader :name
     # The row index. Can be either Daru::Index or Daru::MultiIndex.
     attr_reader :index
-    # The underlying dtype of the Vector. Can be either :array, :gsl.
+    # The underlying dtype of the Vector. Can be :array.
     attr_reader :dtype
     # An Array or the positions in the vector that are being treated as 'missing'.
     attr_reader :missing_positions
@@ -165,7 +164,7 @@ module Daru
     #
     # * +:index+ - Index of the vector
     #
-    # * +:dtype+ - The underlying data type. Can be :array, :gsl.
+    # * +:dtype+ - The underlying data type. Can be :array.
     # Default :array.
     #
     # * +:missing_values+ - An Array of the values that are to be treated as 'missing'.
@@ -902,17 +901,6 @@ module Daru
       end
     end
 
-    # If dtype != gsl, will convert data to GSL::Vector with to_a. Otherwise returns
-    # the stored GSL::Vector object.
-    def to_gsl
-      raise NoMethodError, 'Install gsl-nmatrix for access to this functionality.' unless Daru.has_gsl?
-      if dtype == :gsl
-        @data.data
-      else
-        GSL::Vector.alloc(reject_values(*Daru::MISSING_VALUES).to_a)
-      end
-    end
-
     # Convert to hash (explicit). Hash keys are indexes and values are the correspoding elements
     def to_h
       @index.map { |index| [index, self[index]] }.to_h
@@ -1533,13 +1521,12 @@ module Daru
 
     # Note: To maintain sanity, this _MUST_ be the _ONLY_ place in daru where the
     # @param dtype [db_type] variable is set and the underlying data type of vector changed.
-    def cast_vector_to dtype, source=nil, nm_dtype=nil
+    def cast_vector_to dtype, source=nil, _nm_dtype=nil
       source = @data.to_a if source.nil?
 
       new_vector =
         case dtype
         when :array   then Daru::Accessors::ArrayWrapper.new(source, self)
-        when :gsl then Daru::Accessors::GSLWrapper.new(source, self)
         when :mdarray then raise NotImplementedError, 'MDArray not yet supported.'
         else raise ArgumentError, "Unknown dtype #{dtype}"
         end

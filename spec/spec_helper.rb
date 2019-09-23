@@ -23,7 +23,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'daru'
 
-ALL_DTYPES = [:gsl, :array]
+ALL_DTYPES = [:array]
 
 # FIXME: This must go! Need to be able to use be_within
 def expect_correct_vector_in_delta v1, v2, delta

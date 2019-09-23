@@ -1,5 +1,5 @@
 describe Daru::Vector do
-  [:array, :gsl].each do |dtype|
+  [:array].each do |dtype|
     describe dtype do
       before do
         @dv = Daru::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2], dtype: dtype
@@ -305,7 +305,7 @@ describe Daru::Vector do
 
       context "#proportion" do
         it "calculates proportion" do
-          expect(@dv.proportion(dtype == :gsl ? 1.0 : 1)).to eq(0.1)
+          expect(@dv.proportion(1).to eq(0.1)
         end
       end
 
@@ -313,7 +313,6 @@ describe Daru::Vector do
         it "calculates proportions" do
           actual_proportions = {
             array: {323=>0.1,11=>0.1,555=>0.1,666=>0.2,234=>0.1,21=>0.1,343=>0.1,1=>0.1,2=>0.1},
-            gsl: {323.0=>0.1, 11.0=>0.1, 555.0=>0.1, 666.0=>0.2, 234.0=>0.1, 21.0=>0.1, 343.0=>0.1, 1.0=>0.1, 2.0=>0.1}
           }
           expect(@dv.proportions).to eq(actual_proportions[dtype])
         end
