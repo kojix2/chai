@@ -8,6 +8,7 @@ rvm:
 
 
 script:
+  - gem install bundler
   - bundle add yard-junk
   - bundle install
   - bundle exec rspec
@@ -15,10 +16,6 @@ script:
   - bundle exec yard-junk
 
 install:
-  - if [ $TRAVIS_RUBY_VERSION == '2.2' ] || [ $TRAVIS_RUBY_VERSION == '2.1' ] || [ $TRAVIS_RUBY_VERSION == '2.0' ];
-      then gem install bundler -v '~> 1.6';
-      else gem install bundler;
-      fi
   - gem install rainbow -v '2.2.1'
   - bundle install
 
