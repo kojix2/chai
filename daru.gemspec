@@ -54,5 +54,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'webmock'
 
   spec.add_dependency "nokogiri", ">= 1.10.4"
-  spec.add_development_dependency 'guard-rspec'
 end
