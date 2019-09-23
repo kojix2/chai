@@ -305,7 +305,7 @@ describe Daru::Vector do
 
       context "#proportion" do
         it "calculates proportion" do
-          expect(@dv.proportion(1).to eq(0.1)
+          expect(@dv.proportion(1)).to eq(0.1)
         end
       end
 
