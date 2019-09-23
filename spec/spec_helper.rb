@@ -6,7 +6,6 @@ require 'awesome_print'
 require 'distribution'
 require 'tempfile'
 require 'pry-byebug'
-require 'nokogiri'
 require 'gruff'
 require 'webmock/rspec'
 

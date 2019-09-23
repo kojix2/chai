@@ -51,6 +51,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'gruff'
   spec.add_development_dependency 'webmock'
-
-  spec.add_dependency "nokogiri", ">= 1.10.4"
 end
