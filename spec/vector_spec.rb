@@ -1038,16 +1038,6 @@ describe Daru::Vector do
         end
       end
 
-      context "#cast" do
-        ALL_DTYPES.each do |new_dtype|
-          it "casts from #{dtype} to #{new_dtype}" do
-            v = Daru::Vector.new [1,2,3,4], dtype: dtype
-            v.cast(dtype: new_dtype)
-            expect(v.dtype).to eq(new_dtype)
-          end
-        end
-      end
-
       context "#sort" do
         context Daru::Index do
           before do
