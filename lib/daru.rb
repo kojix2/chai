@@ -30,8 +30,6 @@ module Daru
 
   SPLIT_TOKEN = ','.freeze
 
-  @plotting_library = :gruff
-
   @error_stream = $stderr
 
   class << self
@@ -39,7 +37,6 @@ module Daru
     # Call the #update method every time a values are set or removed in order to update
     # metadata like positions of missing values.
     attr_accessor :lazy_update, :error_stream
-    attr_reader :plotting_library
 
     def create_has_library(library)
       lib_underscore = library.to_s.tr('-', '_')
@@ -59,21 +56,11 @@ module Daru
       end
     end
 
-    def plotting_library= lib
-      case lib
-      when :gruff
-        @plotting_library = lib
-      else
-        raise ArgumentError, "Unsupported library #{lib}"
-      end
-    end
-
     def error msg
       error_stream.puts msg if error_stream
     end
   end
 
-  create_has_library :gruff
 end
 
 autoload :CSV, 'csv'
