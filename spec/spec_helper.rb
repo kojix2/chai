@@ -6,7 +6,6 @@ require 'awesome_print'
 require 'distribution'
 require 'tempfile'
 require 'pry-byebug'
-require 'gruff'
 require 'webmock/rspec'
 
 RSpec::Expectations.configuration.warn_about_potential_false_positives = false
