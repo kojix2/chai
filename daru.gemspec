@@ -23,8 +23,6 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency 'backports'
-
   spec.add_development_dependency 'spreadsheet'
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
