@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Daru
   module Maths
     # Encapsulates statistics methods for vectors. Most basic stuff like mean, etc.
@@ -28,7 +30,7 @@ module Daru
         end
 
         def mode
-          mode = frequencies.to_h.select { |_,v| v == frequencies.max }.keys
+          mode = frequencies.to_h.select { |_, v| v == frequencies.max }.keys
           mode.size > 1 ? Daru::Vector.new(mode) : mode.first
         end
 
@@ -40,7 +42,7 @@ module Daru
         # +methods+ - An array with aggregation methods specified as symbols to
         # be applied to vectors. Default is [:count, :mean, :std, :max,
         # :min]. Methods will be applied in the specified order.
-        def describe methods=nil
+        def describe(methods = nil)
           methods ||= %i[count mean std min max]
           description = methods.map { |m| send(m) }
           Daru::Vector.new(description, index: methods, name: :statistics)
@@ -51,14 +53,14 @@ module Daru
           recode { |val| (val - m).abs }.median
         end
 
-        alias :mad :median_absolute_deviation
+        alias mad median_absolute_deviation
 
         def standard_error
-          standard_deviation_sample/Math.sqrt(size - count_values(*Daru::MISSING_VALUES))
+          standard_deviation_sample / Math.sqrt(size - count_values(*Daru::MISSING_VALUES))
         end
 
         def sum_of_squared_deviation
-          (@data.inject(0) { |a,x| x**2 + a } - (sum**2).quo(size - count_values(*Daru::MISSING_VALUES)).to_f).to_f
+          (@data.inject(0) { |a, x| x**2 + a } - (sum**2).quo(size - count_values(*Daru::MISSING_VALUES)).to_f).to_f
         end
 
         # Retrieve unique values of non-nil data
@@ -85,7 +87,7 @@ module Daru
           #
           #   dv.max(2) { |a,b| a.size <=> b.size }
           #   #=> ["Jon Starkgaryen","Daenerys"]
-          def max(size=nil, &block)
+          def max(size = nil, &block)
             reject_values(*Daru::MISSING_VALUES).to_a.max(size, &block)
           end
 
@@ -104,8 +106,9 @@ module Daru
           #
           #   dv.max_by(2) { |i| i.size }
           #   #=> ["Jon Starkgaryen","Daenerys"]
-          def max_by(size=nil, &block)
+          def max_by(size = nil, &block)
             raise ArgumentError, 'Expected compulsory object block in max_by method' unless block_given?
+
             reject_values(*Daru::MISSING_VALUES).to_a.max_by(size, &block)
           end
 
@@ -127,7 +130,7 @@ module Daru
           #
           #   dv.min(2) { |a,b| a.size <=> b.size }
           #   #=> ["Tyrion","Daenerys"]
-          def min(size=nil, &block)
+          def min(size = nil, &block)
             reject_values(*Daru::MISSING_VALUES).to_a.min(size, &block)
           end
 
@@ -146,8 +149,9 @@ module Daru
           #
           #   dv.min_by(2) { |i| i.size }
           #   #=> ["Tyrion","Daenerys"]
-          def min_by(size=nil, &block)
+          def min_by(size = nil, &block)
             raise ArgumentError, 'Expected compulsory object block in min_by method' unless block_given?
+
             reject_values(*Daru::MISSING_VALUES).to_a.min_by(size, &block)
           end
         else
@@ -169,8 +173,8 @@ module Daru
           #
           #   dv.max(2) { |a,b| a.size <=> b.size }
           #   #=> ["Jon Starkgaryen","Daenerys"]
-          def max(size=nil, &block)
-            range = size.nil? ? 0 : (0..size-1)
+          def max(size = nil, &block)
+            range = size.nil? ? 0 : (0..size - 1)
             reject_values(*Daru::MISSING_VALUES).to_a.sort(&block).reverse[range]
           end
 
@@ -189,9 +193,10 @@ module Daru
           #
           #   dv.max_by(2) { |i| i.size }
           #   #=> ["Jon Starkgaryen","Daenerys"]
-          def max_by(size=nil, &block)
+          def max_by(size = nil, &block)
             raise ArgumentError, 'Expected compulsory object block in max_by method' unless block_given?
-            reject_values(*Daru::MISSING_VALUES).to_a.sort_by(&block).reverse[size.nil? ? 0 : (0..size-1)]
+
+            reject_values(*Daru::MISSING_VALUES).to_a.sort_by(&block).reverse[size.nil? ? 0 : (0..size - 1)]
           end
 
           # Returns the minimum value(s) present in the vector, with an optional comparator block.
@@ -212,8 +217,8 @@ module Daru
           #
           #   dv.min(2) { |a,b| a.size <=> b.size }
           #   #=> ["Tyrion","Daenerys"]
-          def min(size=nil, &block)
-            range = size.nil? ? 0 : (0..size-1)
+          def min(size = nil, &block)
+            range = size.nil? ? 0 : (0..size - 1)
             reject_values(*Daru::MISSING_VALUES).to_a.sort(&block)[range]
           end
 
@@ -235,9 +240,10 @@ module Daru
           #
           #   dv.min_by(2) { |i| i.size }
           #   #=> ["Tyrion","Daenerys"]
-          def min_by(size=nil, &block)
+          def min_by(size = nil, &block)
             raise ArgumentError, 'Expected compulsory object block in min_by method' unless block_given?
-            reject_values(*Daru::MISSING_VALUES).to_a.sort_by(&block)[size.nil? ? 0 : (0..size-1)]
+
+            reject_values(*Daru::MISSING_VALUES).to_a.sort_by(&block)[size.nil? ? 0 : (0..size - 1)]
           end
         end
 
@@ -260,7 +266,7 @@ module Daru
         #
         #   dv.index_of_max(2) { |a,b| a.size <=> b.size }
         #   #=> [:j, :d]
-        def index_of_max(size=nil,&block)
+        def index_of_max(size = nil, &block)
           vals = max(size, &block)
           dv   = reject_values(*Daru::MISSING_VALUES)
           vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
@@ -282,7 +288,7 @@ module Daru
         #
         #   dv.index_of_max_by(2) { |i| i.size }
         #   #=> [:j, :d]
-        def index_of_max_by(size=nil,&block)
+        def index_of_max_by(size = nil, &block)
           vals = max_by(size, &block)
           dv   = reject_values(*Daru::MISSING_VALUES)
           vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
@@ -307,7 +313,7 @@ module Daru
         #
         #   dv.index_of_min(2) { |a,b| a.size <=> b.size }
         #   #=> [:t, :d]
-        def index_of_min(size=nil,&block)
+        def index_of_min(size = nil, &block)
           vals = min(size, &block)
           dv   = reject_values(*Daru::MISSING_VALUES)
           vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
@@ -329,7 +335,7 @@ module Daru
         #
         #   dv.index_of_min(2) { |i| i.size }
         #   #=> [:t, :d]
-        def index_of_min_by(size=nil,&block)
+        def index_of_min_by(size = nil, &block)
           vals = min_by(size, &block)
           dv   = reject_values(*Daru::MISSING_VALUES)
           vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
@@ -339,7 +345,7 @@ module Daru
         # @return [Daru::Vector]
         def max_index
           max_value = @data.max
-          Daru::Vector.new({index_of(max_value) => max_value}, name: @name, dtype: @dtype)
+          Daru::Vector.new({ index_of(max_value) => max_value }, name: @name, dtype: @dtype)
         end
 
         def frequencies
@@ -350,7 +356,7 @@ module Daru
           )
         end
 
-        alias_method :freqs, :frequencies
+        alias freqs frequencies
         deprecate :freqs, :frequencies, 2016, 10
 
         def proportions
@@ -378,7 +384,7 @@ module Daru
         # retrieves number of instances where block returns true. If other
         # values given, retrieves the frequency for this value. If no value
         # given, counts the number of non-nil elements in the Vector.
-        def count value=false, &block
+        def count(value = false, &block)
           if block_given?
             @data.select(&block).count
           elsif value
@@ -397,12 +403,12 @@ module Daru
           Daru::Vector.new(values)
         end
 
-        def proportion value=1
+        def proportion(value = 1)
           frequencies[value].quo(size - count_values(*Daru::MISSING_VALUES)).to_f
         end
 
         # Sample variance with denominator (N-1)
-        def variance_sample m=nil
+        def variance_sample(m = nil)
           m ||= mean
           if @data.respond_to? :variance_sample
             @data.variance_sample m
@@ -412,7 +418,7 @@ module Daru
         end
 
         # Population variance with denominator (N)
-        def variance_population m=nil
+        def variance_population(m = nil)
           m ||= mean
           if @data.respond_to? :variance_population
             @data.variance_population m
@@ -422,25 +428,25 @@ module Daru
         end
 
         # Sample covariance with denominator (N-1)
-        def covariance_sample other
-          size == other.size or raise ArgumentError, 'size of both the vectors must be equal'
+        def covariance_sample(other)
+          (size == other.size) || raise(ArgumentError, 'size of both the vectors must be equal')
           covariance_sum(other) / (size - count_values(*Daru::MISSING_VALUES) - 1)
         end
 
         # Population covariance with denominator (N)
-        def covariance_population other
-          size == other.size or raise ArgumentError, 'size of both the vectors must be equal'
+        def covariance_population(other)
+          (size == other.size) || raise(ArgumentError, 'size of both the vectors must be equal')
           covariance_sum(other) / (size - count_values(*Daru::MISSING_VALUES))
         end
 
-        def sum_of_squares(m=nil)
+        def sum_of_squares(m = nil)
           m ||= mean
-          reject_values(*Daru::MISSING_VALUES).data.inject(0) { |memo, val|
+          reject_values(*Daru::MISSING_VALUES).data.inject(0) do |memo, val|
             memo + (val - m)**2
-          }
+          end
         end
 
-        def standard_deviation_population m=nil
+        def standard_deviation_population(m = nil)
           m ||= mean
           if @data.respond_to? :standard_deviation_population
             @data.standard_deviation_population(m)
@@ -449,7 +455,7 @@ module Daru
           end
         end
 
-        def standard_deviation_sample m=nil
+        def standard_deviation_sample(m = nil)
           m ||= mean
           if @data.respond_to? :standard_deviation_sample
             @data.standard_deviation_sample m
@@ -459,7 +465,7 @@ module Daru
         end
 
         # Calculate skewness using (sigma(xi - mean)^3)/((N)*std_dev_sample^3)
-        def skew m=nil
+        def skew(m = nil)
           if @data.respond_to? :skew
             @data.skew
           else
@@ -469,22 +475,22 @@ module Daru
           end
         end
 
-        def kurtosis m=nil
+        def kurtosis(m = nil)
           if @data.respond_to? :kurtosis
             @data.kurtosis
           else
             m ||= mean
-            fo  = @data.inject(0) { |a, x| a + ((x - m) ** 4) }
-            fo.quo((size - indexes(*Daru::MISSING_VALUES).size) * standard_deviation_sample(m) ** 4) - 3
+            fo  = @data.inject(0) { |a, x| a + ((x - m)**4) }
+            fo.quo((size - indexes(*Daru::MISSING_VALUES).size) * standard_deviation_sample(m)**4) - 3
           end
         end
 
-        def average_deviation_population m=nil
+        def average_deviation_population(m = nil)
           must_be_numeric!
           m ||= mean
-          reject_values(*Daru::MISSING_VALUES).data.inject(0) { |memo, val|
+          reject_values(*Daru::MISSING_VALUES).data.inject(0) do |memo, val|
             (val - m).abs + memo
-          }.quo(size - count_values(*Daru::MISSING_VALUES))
+          end.quo(size - count_values(*Daru::MISSING_VALUES))
         end
 
         # Returns the value of the percentile q
@@ -497,7 +503,7 @@ module Daru
         # == References
         #
         # This is the NIST recommended method (http://en.wikipedia.org/wiki/Percentile#NIST_method)
-        def percentile(q, strategy=:midpoint)
+        def percentile(q, strategy = :midpoint)
           case strategy
           when :midpoint
             midpoint_percentile(q)
@@ -511,7 +517,7 @@ module Daru
         # Dichotomize the vector with 0 and 1, based on lowest value.
         # If parameter is defined, this value and lower will be 0
         # and higher, 1.
-        def dichotomize(low=nil)
+        def dichotomize(low = nil)
           low ||= factors.min
 
           recode do |x|
@@ -536,27 +542,25 @@ module Daru
         #
         # * use_population - Pass as *true* if you want to use population
         # standard deviation instead of sample standard deviation.
-        def standardize use_population=false
+        def standardize(use_population = false)
           m ||= mean
           sd = use_population ? sdp : sds
-          return Daru::Vector.new([nil]*size) if m.nil? || sd == 0.0
+          return Daru::Vector.new([nil] * size) if m.nil? || sd == 0.0
 
           vector_standardized_compute m, sd
         end
 
         # :nocov:
-        def box_cox_transformation lambda # :nodoc:
+        def box_cox_transformation(lambda) # :nodoc:
           must_be_numeric!
 
           recode do |x|
-            if !x.nil?
+            unless x.nil?
               if lambda.zero?
                 Math.log(x)
               else
-                (x ** lambda - 1).quo(lambda)
+                (x**lambda - 1).quo(lambda)
               end
-            else
-              nil
             end
           end
         end
@@ -565,15 +569,15 @@ module Daru
         # Replace each non-nil value in the vector with its percentile.
         def vector_percentile
           c = size - indexes(*Daru::MISSING_VALUES).size
-          ranked.recode! { |i| i.nil? ? nil : (i.quo(c)*100).to_f }
+          ranked.recode! { |i| i.nil? ? nil : (i.quo(c) * 100).to_f }
         end
 
-        def vector_standardized_compute(m,sd)
+        def vector_standardized_compute(m, sd)
           if @data.respond_to? :vector_standardized_compute
-            @data.vector_standardized_compute(m,sd)
+            @data.vector_standardized_compute(m, sd)
           else
             Daru::Vector.new @data.collect { |x| x.nil? ? nil : (x.to_f - m).quo(sd) },
-              index: index, name: name, dtype: dtype
+                             index: index, name: name, dtype: dtype
           end
         end
 
@@ -581,8 +585,8 @@ module Daru
           if @data.respond_to? :vector_centered_compute
             @data.vector_centered_compute(m)
           else
-            Daru::Vector.new @data.collect { |x| x.nil? ? nil : x.to_f-m },
-              index: index, name: name, dtype: dtype
+            Daru::Vector.new @data.collect { |x| x.nil? ? nil : x.to_f - m },
+                             index: index, name: name, dtype: dtype
           end
         end
 
@@ -591,7 +595,7 @@ module Daru
         #
         # In all the trails, every item have the same probability
         # of been selected.
-        def sample_with_replacement(sample=1)
+        def sample_with_replacement(sample = 1)
           if @data.respond_to? :sample_with_replacement
             @data.sample_with_replacement sample
           else
@@ -607,7 +611,7 @@ module Daru
         # Every element could only be selected once.
         #
         # A sample of the same size of the vector is the vector itself.
-        def sample_without_replacement(sample=1)
+        def sample_without_replacement(sample = 1)
           if @data.respond_to? :sample_without_replacement
             @data.sample_without_replacement sample
           else
@@ -628,11 +632,11 @@ module Daru
         #   #   <Daru::Vector:28713060 @name = nil size: 5 >
         #   #              nil
         #   #   a
-        #   #   f	   0.5
-        #   #   t	   0.0
-        #   #   i	   0.3333333333333333
+        #   #   f     0.5
+        #   #   t     0.0
+        #   #   i     0.3333333333333333
         #   #   k          0.25
-        def percent_change periods=1
+        def percent_change(periods = 1)
           must_be_numeric!
 
           prev = nil
@@ -667,7 +671,7 @@ module Daru
         #   ts.diff   # => [nil, -0.46, 0.21, 0.27, ...]
         #
         # @return [Daru::Vector]
-        def diff(max_lags=1)
+        def diff(max_lags = 1)
           ts = self
           difference = []
           max_lags.times do
@@ -689,7 +693,7 @@ module Daru
         #            # => [0.69, 0.23, 0.44, 0.71, ...]
         #   # first 9 observations are nil
         #   ts.rolling(:mean)    # => [ ... nil, 0.484... , 0.445... , 0.513 ... , ... ]
-        def rolling function, n=10
+        def rolling(function, n = 10)
           Daru::Vector.new(
             [nil] * (n - 1) +
             (0..(size - n)).map do |i|
@@ -723,7 +727,7 @@ module Daru
         #   Calculate rolling variance
         #   @yieldparam [Integer] n (10) Loopback length
         %i[count mean median max min sum std variance].each do |meth|
-          define_method("rolling_#{meth}".to_sym) do |n=10|
+          define_method("rolling_#{meth}".to_sym) do |n = 10|
             rolling(meth, n)
           end
         end
@@ -751,7 +755,7 @@ module Daru
         #   ts.ema   # => [ ... nil, 0.455... , 0.395..., 0.323..., ... ]
         #
         # @return [Daru::Vector] Contains EMA
-        def ema(n=10, wilder=false) # rubocop:disable Metrics/AbcSize
+        def ema(n = 10, wilder = false) # rubocop:disable Metrics/AbcSize
           smoother = wilder ? 1.0 / n : 2.0 / (n + 1)
           # need to start everything from the first non-nil observation
           start = @data.index { |i| !i.nil? }
@@ -785,7 +789,7 @@ module Daru
         #   ts.emv   # => [ ... nil, 0.073... , 0.082..., 0.080..., ...]
         #
         # @return [Daru::Vector] contains EMV
-        def emv(n=10, wilder=false) # rubocop:disable Metrics/AbcSize
+        def emv(n = 10, wilder = false) # rubocop:disable Metrics/AbcSize
           smoother = wilder ? 1.0 / n : 2.0 / (n + 1)
           # need to start everything from the first non-nil observation
           start = @data.index { |i| !i.nil? }
@@ -794,7 +798,7 @@ module Daru
           mean_base = [nil] * (start + n - 1)
           mean_base << @data[start...(start + n)].inject(0.0) { |s, a| a.nil? ? s : s + a } / n
           # nth observation is just a moving variance_population
-          var_base << @data[start...(start + n)].inject(0.0) { |s,x| x.nil? ? s : s + (x - mean_base.last)**2 } / n
+          var_base << @data[start...(start + n)].inject(0.0) { |s, x| x.nil? ? s : s + (x - mean_base.last)**2 } / n
           (start + n).upto size - 1 do |i|
             last = mean_base.last
             mean_base << self[i] * smoother + (1 - smoother) * last
@@ -822,7 +826,7 @@ module Daru
         #   ts.emsd   # => [ ... nil, 0.285... , 0.258..., 0.243..., ...]
         #
         # @return [Daru::Vector] contains EMSD
-        def emsd(n=10, wilder=false)
+        def emsd(n = 10, wilder = false)
           result = []
           emv_return = emv(n, wilder)
           emv_return.each do |d|
@@ -850,7 +854,7 @@ module Daru
         # @return [Array<Daru::Vector>] macdseries, macdsignal and macdhist are
         #   returned as an array of three Daru::Vectors
         #
-        def macd(fast=12, slow=26, signal=9)
+        def macd(fast = 12, slow = 26, signal = 9)
           macdseries = ema(fast) - ema(slow)
           macdsignal = macdseries.ema(signal)
           macdhist = macdseries - macdsignal
@@ -867,7 +871,7 @@ module Daru
         #
         #   ts.acf   # => array with first 21 autocorrelations
         #   ts.acf 3 # => array with first 3 autocorrelations
-        def acf(max_lags=nil)
+        def acf(max_lags = nil)
           max_lags ||= (10 * Math.log10(size)).to_i
 
           (0..max_lags).map do |i|
@@ -892,7 +896,7 @@ module Daru
         # == Returns
         #
         # Autocovariance value
-        def acvf(demean=true, unbiased=true) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+        def acvf(demean = true, unbiased = true) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
           opts = {
             demean: true,
             unbaised: true
@@ -931,25 +935,25 @@ module Daru
           Daru::Vector.new(result, index: @index)
         end
 
-        alias :sdp :standard_deviation_population
-        alias :sds :standard_deviation_sample
-        alias :std :sds
-        alias :adp :average_deviation_population
-        alias :cov :coefficient_of_variation
-        alias :variance :variance_sample
-        alias :covariance :covariance_sample
-        alias :sd :standard_deviation_sample
-        alias :ss :sum_of_squares
-        alias :percentil :percentile
-        alias :se :standard_error
+        alias sdp standard_deviation_population
+        alias sds standard_deviation_sample
+        alias std sds
+        alias adp average_deviation_population
+        alias cov coefficient_of_variation
+        alias variance variance_sample
+        alias covariance covariance_sample
+        alias sd standard_deviation_sample
+        alias ss sum_of_squares
+        alias percentil percentile
+        alias se standard_error
 
         private
 
         def must_be_numeric!
-          numeric? or raise TypeError, 'Vector must be numeric'
+          numeric? || raise(TypeError, 'Vector must be numeric')
         end
 
-        def covariance_sum other
+        def covariance_sum(other)
           self_mean = mean
           other_mean = other.mean
           @data
@@ -966,10 +970,10 @@ module Daru
           sorted = reject_values(*Daru::MISSING_VALUES).to_a.sort
 
           v = ((size - count_values(*Daru::MISSING_VALUES)) * q).quo(100)
-          if v.to_i!=v
+          if v.to_i != v
             sorted[v.to_i]
           else
-            (sorted[(v-0.5).to_i].to_f + sorted[(v+0.5).to_i]).quo(2)
+            (sorted[(v - 0.5).to_i].to_f + sorted[(v + 0.5).to_i]).quo(2)
           end
         end
 
@@ -989,11 +993,12 @@ module Daru
           end
         end
 
-        def raw_sample_without_replacement sample
+        def raw_sample_without_replacement(sample)
           valid = indexes(*Daru::MISSING_VALUES).empty? ? self : reject_values(*Daru::MISSING_VALUES)
           raise ArgumentError, "Sample size couldn't be greater than n" if
             sample > valid.size
-          out  = []
+
+          out = []
           size = valid.size
           while out.size < sample
             value = rand(size)

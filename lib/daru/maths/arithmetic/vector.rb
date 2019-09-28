@@ -1,28 +1,30 @@
+# frozen_string_literal: true
+
 module Daru
   module Maths
     module Arithmetic
       module Vector
-        def + other
+        def +(other)
           binary_op :+, other
         end
 
-        def - other
+        def -(other)
           binary_op :-, other
         end
 
-        def * other
+        def *(other)
           binary_op :*, other
         end
 
-        def / other
+        def /(other)
           binary_op :/, other
         end
 
-        def % other
+        def %(other)
           binary_op :%, other
         end
 
-        def ** other
+        def **(other)
           binary_op :**, other
         end
 
@@ -35,11 +37,11 @@ module Daru
         end
 
         def abs
-          recode { |e| e.abs unless e.nil? }
+          recode { |e| e&.abs }
         end
 
-        def round precision=0
-          recode { |e| e.round(precision) unless e.nil? }
+        def round(precision = 0)
+          recode { |e| e&.round(precision) }
         end
 
         # Add specified vector.
@@ -66,17 +68,17 @@ module Daru
         #          2   3
         #          3   0
         #
-        def add other, opts={}
+        def add(other, opts = {})
           v2v_binary :+, other, skipnil: opts.fetch(:skipnil, false)
         end
 
         private
 
-        def math_unary_op operation
+        def math_unary_op(operation)
           recode { |e| Math.send(operation, e) unless e.nil? }
         end
 
-        def binary_op operation, other
+        def binary_op(operation, other)
           case other
           when Daru::Vector
             v2v_binary operation, other
@@ -85,12 +87,12 @@ module Daru
           end
         end
 
-        def v2o_binary operation, other
+        def v2o_binary(operation, other)
           Daru::Vector.new map { |e| e.nil? ? nil : e.send(operation, other) },
-            name: @name, index: @index
+                           name: @name, index: @index
         end
 
-        def v2v_binary operation, other, opts={}
+        def v2v_binary(operation, other, opts = {})
           # FIXME: why the sorting?.. - zverok, 2016-05-18
           index = (@index.to_a | other.index.to_a).sort
 

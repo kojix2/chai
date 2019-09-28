@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Daru
   module Core
     class MergeFrame
@@ -17,7 +19,7 @@ module Daru
         end
       end
 
-      def initialize left_df, right_df, opts={} # rubocop:disable Metrics/AbcSize -- quick-fix for issue #171
+      def initialize(left_df, right_df, opts = {}) # rubocop:disable Metrics/AbcSize -- quick-fix for issue #171
         init_opts(opts)
         validate_on!(left_df, right_df)
         key_sanitizer = ->(h) { sanitize_merge_keys(h.values_at(*on)) }
@@ -49,15 +51,15 @@ module Daru
       private
 
       attr_reader :on, :indicator,
-        :left, :left_key_values, :keep_left, :left_keys,
-        :right, :right_key_values, :keep_right, :right_keys
+                  :left, :left_key_values, :keep_left, :left_keys,
+                  :right, :right_key_values, :keep_right, :right_keys
 
       attr_accessor :merge_key
 
       LEFT_RIGHT_COMBINATIONS = {
         #       left   right
         inner: [false, false],
-        left:  [true, false],
+        left: [true, false],
         right: [false, true],
         outer: [true, true]
       }.freeze
@@ -73,15 +75,15 @@ module Daru
       end
 
       def extract_left_right(how)
-        LEFT_RIGHT_COMBINATIONS[how] or
-          raise ArgumentError, "Unrecognized join option: #{how}"
+        LEFT_RIGHT_COMBINATIONS[how] ||
+          raise(ArgumentError, "Unrecognized join option: #{how}")
       end
 
       def sanitize_merge_keys(merge_keys)
         merge_keys.map { |v| v.nil? ? NilSorter.new : v }
       end
 
-      def df_to_a df
+      def df_to_a(df)
         # FIXME: much faster than "native" DataFrame#to_a. Should not be
         h = df.to_h
         keys = h.keys
@@ -100,25 +102,24 @@ module Daru
         ]
       end
 
-      def guard_keys keys, duplicates, num
+      def guard_keys(keys, duplicates, num)
         keys.map { |v| [v, guard_duplicate(v, duplicates, num)] }.to_h
       end
 
-      def guard_duplicate val, duplicates, num
+      def guard_duplicate(val, duplicates, num)
         duplicates.include?(val) ? :"#{val}_#{num}" : val
       end
 
       def row(lkey, rkey)
-        case
-        when !lkey && !rkey
+        if !lkey && !rkey
           # :nocov:
           # It's just an impossibility handler, can't be covered :)
           raise 'Unexpected condition met during merge'
           # :nocov:
-        when lkey == rkey
+        elsif lkey == rkey
           self.merge_key = lkey
           add_indicator(merge_matching_rows, :both)
-        when !rkey || lt(lkey, rkey)
+        elsif !rkey || lt(lkey, rkey)
           add_indicator(left_row_missing_right, :left_only)
         else # !lkey || lt(rkey, lkey)
           add_indicator(right_row_missing_left, :right_only)
@@ -127,6 +128,7 @@ module Daru
 
       def add_indicator(row, indicator_value)
         return row unless indicator
+
         row[indicator] = indicator_value
         row
       end
@@ -184,19 +186,19 @@ module Daru
         (k1 <=> k2) == -1
       end
 
-      def merge_rows lrow, rrow
+      def merge_rows(lrow, rrow)
         left_keys
           .map { |from, to| [to, lrow[from]] }.to_h
           .merge(on.map { |col| [col, lrow[col]] }.to_h)
-          .merge(indicator ? {indicator => nil} : {})
+          .merge(indicator ? { indicator => nil } : {})
           .merge(right_keys.map { |from, to| [to, rrow[from]] }.to_h)
       end
 
-      def expand_row row, renamings
+      def expand_row(row, renamings)
         renamings
           .map { |from, to| [to, row[from]] }.to_h
           .merge(on.map { |col| [col, row[col]] }.to_h)
-          .merge(indicator ? {indicator => nil} : {})
+          .merge(indicator ? { indicator => nil } : {})
       end
 
       def first_right_key
@@ -242,24 +244,25 @@ module Daru
 
       def validate_on!(left_df, right_df)
         @on.each do |on|
-          left_df.has_vector?(on) && right_df.has_vector?(on) or
-            raise ArgumentError, "Both dataframes expected to have #{on.inspect} field"
+          left_df.has_vector?(on) && right_df.has_vector?(on) ||
+            raise(ArgumentError, "Both dataframes expected to have #{on.inspect} field")
         end
       end
 
       def safe_compare(left_array, right_array)
-        left_array.zip(right_array).map { |l, r|
+        left_array.zip(right_array).map do |l, r|
           next 0 if l.nil? && r.nil?
           next 1 if r.nil?
           next -1 if l.nil?
+
           l <=> r
-        }.reject(&:zero?).first || 0
+        end.reject(&:zero?).first || 0
       end
     end
 
     module Merge
       class << self
-        def join df1, df2, opts={}
+        def join(df1, df2, opts = {})
           MergeFrame.new(df1, df2, opts).join
         end
       end

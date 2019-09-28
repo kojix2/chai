@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Daru
   DAYS_OF_WEEK = {
     'SUN' => 0,
@@ -28,7 +30,7 @@ module Daru
 
   @lazy_update = false
 
-  SPLIT_TOKEN = ','.freeze
+  SPLIT_TOKEN = ','
 
   @error_stream = $stderr
 
@@ -56,11 +58,10 @@ module Daru
       end
     end
 
-    def error msg
-      error_stream.puts msg if error_stream
+    def error(msg)
+      error_stream&.puts msg
     end
   end
-
 end
 
 autoload :CSV, 'csv'

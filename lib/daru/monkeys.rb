@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 class Array
-  def daru_vector name=nil, index=nil, dtype=:array
+  def daru_vector(name = nil, index = nil, dtype = :array)
     Daru::Vector.new self, name: name, index: index, dtype: dtype
   end
 
-  alias_method :dv, :daru_vector
+  alias dv daru_vector
 
   def to_index
     Daru::Index.new self
@@ -11,11 +13,11 @@ class Array
 end
 
 class Range
-  def daru_vector name=nil, index=nil, dtype=:array
+  def daru_vector(name = nil, index = nil, dtype = :array)
     Daru::Vector.new self, name: name, index: index, dtype: dtype
   end
 
-  alias_method :dv, :daru_vector
+  alias dv daru_vector
 
   def to_index
     Daru::Index.new to_a
@@ -23,23 +25,23 @@ class Range
 end
 
 class Hash
-  def daru_vector index=nil, dtype=:array
+  def daru_vector(index = nil, dtype = :array)
     Daru::Vector.new values[0], name: keys[0], index: index, dtype: dtype
   end
 
-  alias_method :dv, :daru_vector
+  alias dv daru_vector
 end
 
 class MDArray
-  def daru_vector(name=nil, index=nil, *)
+  def daru_vector(name = nil, index = nil, *)
     Daru::Vector.new self, name: name, index: index, dtype: :mdarray
   end
 
-  alias_method :dv, :daru_vector
+  alias dv daru_vector
 end
 
 class Matrix
-  def elementwise_division other
+  def elementwise_division(other)
     map.with_index do |e, index|
       e / other.to_a.flatten[index]
     end

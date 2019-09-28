@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Daru
   module IO
     class SqlDataSource
@@ -70,8 +72,8 @@ module Daru
       private
 
       def init_adapter(db, query)
-        query = String.try_convert(query) or
-          raise ArgumentError, "Query must be a string, #{query.class} received"
+        (query = String.try_convert(query)) ||
+          raise(ArgumentError, "Query must be a string, #{query.class} received")
 
         db = attempt_sqlite3_connection(db) if db.is_a?(String) && Pathname(db).exist?
 

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Daru
   require_relative 'csv/converters.rb'
   module IOHelpers
     class << self
-      def process_row(row,empty)
+      def process_row(row, empty)
         row.to_a.map do |c|
           if empty.include?(c)
             # FIXME: As far as I can guess, it will never work.
@@ -18,8 +20,8 @@ module Daru
 
       private
 
-      INT_PATTERN = /^[-+]?\d+$/
-      FLOAT_PATTERN = /^[-+]?\d+[,.]?\d*(e-?\d+)?$/
+      INT_PATTERN = /^[-+]?\d+$/.freeze
+      FLOAT_PATTERN = /^[-+]?\d+[,.]?\d*(e-?\d+)?$/.freeze
 
       def try_string_to_number(s)
         case s
@@ -38,7 +40,7 @@ module Daru
     class << self
       # Functions for loading/writing Excel files.
 
-      def from_excel path, opts={}
+      def from_excel(path, opts = {})
         optional_gem 'spreadsheet', '~>1.1.1'
         opts = {
           worksheet_id: 0
@@ -50,7 +52,7 @@ module Daru
         headers      = ArrayHelper.recode_repeated(worksheet.row(0)).map(&:to_sym)
 
         df = Daru::DataFrame.new({})
-        headers.each_with_index do |h,i|
+        headers.each_with_index do |h, i|
           col = worksheet.column(i).to_a
           col.delete_at 0
           df[h] = col
@@ -59,7 +61,7 @@ module Daru
         df
       end
 
-      def dataframe_write_excel dataframe, path, _opts={}
+      def dataframe_write_excel(dataframe, path, _opts = {})
         book   = Spreadsheet::Workbook.new
         sheet  = book.create_worksheet
         format = Spreadsheet::Format.new color: :blue, weight: :bold
@@ -76,7 +78,7 @@ module Daru
       end
 
       # Functions for loading/writing CSV files
-      def from_csv path, opts={}
+      def from_csv(path, opts = {})
         daru_options, opts = from_csv_prepare_opts opts
         # Preprocess headers for detecting and correcting repetition in
         # case the :headers option is not specified.
@@ -87,10 +89,10 @@ module Daru
             from_csv_hash(path, opts)
               .tap { |hash| daru_options[:order] = hash.keys }
           end
-        Daru::DataFrame.new(hsh,daru_options)
+        Daru::DataFrame.new(hsh, daru_options)
       end
 
-      def dataframe_write_csv dataframe, path, opts={}
+      def dataframe_write_csv(dataframe, path, opts = {})
         options = {
           converters: :numeric
         }.merge(opts)
@@ -120,9 +122,9 @@ module Daru
         SqlDataSource.make_dataframe(db, query)
       end
 
-      def dataframe_write_sql ds, dbh, table
+      def dataframe_write_sql(ds, dbh, table)
         require 'dbi'
-        query = "INSERT INTO #{table} ("+ds.vectors.to_a.join(',')+') VALUES ('+(['?']*ds.vectors.size).join(',')+')'
+        query = "INSERT INTO #{table} (" + ds.vectors.to_a.join(',') + ') VALUES (' + (['?'] * ds.vectors.size).join(',') + ')'
         sth   = dbh.prepare(query)
         ds.each_row { |c| sth.execute(*c.to_a) }
         true
@@ -143,12 +145,13 @@ module Daru
 
       # Loading data from plain text files
 
-      def from_plaintext filename, fields
+      def from_plaintext(filename, fields)
         ds = Daru::DataFrame.new({}, order: fields)
-        fp = File.open(filename,'r')
+        fp = File.open(filename, 'r')
         fp.each_line do |line|
-          row = Daru::IOHelpers.process_row(line.strip.split(/\s+/),[''])
+          row = Daru::IOHelpers.process_row(line.strip.split(/\s+/), [''])
           next if row == ["\x1A"]
+
           ds.add_row(row)
         end
         ds.update
@@ -157,13 +160,13 @@ module Daru
       end
 
       # Loading and writing Marshalled DataFrame/Vector
-      def save klass, filename
+      def save(klass, filename)
         fp = File.open(filename, 'w')
         Marshal.dump(klass, fp)
         fp.close
       end
 
-      def load filename
+      def load(filename)
         if File.exist? filename
           o = false
           File.open(filename, 'r') { |fp| o = Marshal.load(fp) }
@@ -173,7 +176,7 @@ module Daru
         end
       end
 
-      def from_html path, opts
+      def from_html(path, opts)
         optional_gem 'mechanize', '~>2.7.5'
         page = Mechanize.new.get(path)
         page.search('table').map { |table| html_parse_table table }
@@ -195,7 +198,7 @@ module Daru
 
       DARU_OPT_KEYS = %i[clone order index name].freeze
 
-      def from_csv_prepare_opts opts
+      def from_csv_prepare_opts(opts)
         opts[:col_sep]           ||= ','
         opts[:skip_blanks]       ||= true
         opts[:converters]        ||= [:numeric]
@@ -240,12 +243,13 @@ module Daru
       end
 
       def html_parse_table(table)
-        headers, headers_size = html_scrape_tag(table,'th')
+        headers, headers_size = html_scrape_tag(table, 'th')
         data, size = html_scrape_tag(table, 'td')
         data = data.keep_if { |x| x.count == size }
         order, indice = html_parse_hash(headers, size, headers_size) if headers_size >= size
-        return unless (indice.nil? || indice.count == data.count) && !order.nil? && order.count>0
-        {data: data.compact, index: indice, order: order}
+        return unless (indice.nil? || indice.count == data.count) && !order.nil? && order.count > 0
+
+        { data: data.compact, index: indice, order: order }
       end
 
       def html_scrape_tag(table, tag)
@@ -262,17 +266,17 @@ module Daru
         order = headers[headers_index]
         order_index = order.count - size
         order = order[order_index..-1]
-        indice = headers[headers_index+1..-1].flatten
+        indice = headers[headers_index + 1..-1].flatten
         indice = nil if indice.to_a.empty?
         [order, indice]
       end
 
-      def html_search(table, match=nil)
+      def html_search(table, match = nil)
         match.nil? ? true : (table.to_s.include? match)
       end
 
       # Allows user to override the scraped order / index / data
-      def html_decide_values(scraped_val={}, user_val={})
+      def html_decide_values(scraped_val = {}, user_val = {})
         %I[data index name order].each do |key|
           user_val[key] ||= scraped_val[key]
         end
@@ -281,9 +285,9 @@ module Daru
 
       def html_table_to_dataframe(table)
         Daru::DataFrame.rows table[:data],
-          index: table[:index],
-          order: table[:order],
-          name: table[:name]
+                             index: table[:index],
+                             order: table[:order],
+                             name: table[:name]
       end
     end
   end

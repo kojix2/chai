@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Daru
   module Maths
     module Statistics
@@ -29,7 +31,7 @@ module Daru
         end
 
         # Calculate the maximum value of each numeric vector.
-        def max opts={}
+        def max(opts = {})
           if opts[:vector]
             row[*self[opts[:vector]].max_index.index.to_a]
           else
@@ -87,7 +89,7 @@ module Daru
         # +methods+ - An array with aggregation methods specified as symbols to
         # be applied to numeric vectors. Default is [:count, :mean, :std, :max,
         # :min]. Methods will be applied in the specified order.
-        def describe methods=nil
+        def describe(methods = nil)
           methods ||= %i[count mean std min max]
 
           description_hash = {}
@@ -116,12 +118,12 @@ module Daru
         #   #   <Daru::DataFrame:23513280 @rows: 6 @cols: 2>
         #   #              col0                col1
         #   #   one
-        #   #   two	   1.0	               1.0
-        #   #   three	   0.5                 0.5
-        #   #   four	   0.3333333333333333  0.3333333333333333
+        #   #   two     1.0                 1.0
+        #   #   three     0.5                 0.5
+        #   #   four     0.3333333333333333  0.3333333333333333
         #   #   five       0.25                0.25
         #   #   six        0.2                 0.2
-        def percent_change periods=1
+        def percent_change(periods = 1)
           df_numeric = only_numerics.vectors.to_a
           df = Daru::DataFrame.new({}, order: @order, index: @index, name: @name)
           df_numeric.each do |vec|
@@ -133,7 +135,7 @@ module Daru
         # Calculate sample variance-covariance between the numeric vectors.
         def covariance
           cache = Hash.new do |h, (col, row)|
-            value = vector_cov(self[row],self[col])
+            value = vector_cov(self[row], self[col])
             h[[col, row]] = value
             h[[row, col]] = value
           end
@@ -141,14 +143,14 @@ module Daru
 
           mat_rows = vectors.collect do |row|
             vectors.collect do |col|
-              row == col ? self[row].variance : cache[[col,row]]
+              row == col ? self[row].variance : cache[[col, row]]
             end
           end
 
           Daru::DataFrame.rows(mat_rows, index: numeric_vectors, order: numeric_vectors)
         end
 
-        alias :cov :covariance
+        alias cov covariance
 
         # Calculate the correlation between the numeric vectors.
         def correlation
@@ -161,11 +163,11 @@ module Daru
           Daru::DataFrame.rows(corr_arry, index: numeric_vectors, order: numeric_vectors)
         end
 
-        alias :corr :correlation
+        alias corr correlation
 
         private
 
-        def apply_method_to_numerics method, *args
+        def apply_method_to_numerics(method, *args)
           numerics = @vectors.to_a.map { |n| [n, @data[@vectors[n]]] }
                              .select { |_n, v| v.numeric? }
           computed = numerics.map { |_n, v| v.send(method, *args) }
@@ -173,28 +175,29 @@ module Daru
           Daru::DataFrame.new(computed, index: @index, order: numerics.map(&:first), clone: false)
         end
 
-        def vector_cov v1a, v2a
-          sum_of_squares(v1a,v2a) / (v1a.size - 1)
+        def vector_cov(v1a, v2a)
+          sum_of_squares(v1a, v2a) / (v1a.size - 1)
         end
 
-        def sum_of_squares v1, v2
-          v1a,v2a = v1.reject_values(*Daru::MISSING_VALUES),v2.reject_values(*Daru::MISSING_VALUES)
+        def sum_of_squares(v1, v2)
+          v1a = v1.reject_values(*Daru::MISSING_VALUES)
+          v2a = v2.reject_values(*Daru::MISSING_VALUES)
           v1a.reset_index!
           v2a.reset_index!
           m1 = v1a.mean
           m2 = v2a.mean
-          v1a.size.times.inject(0) { |ac,i| ac+(v1a[i]-m1)*(v2a[i]-m2) }
+          v1a.size.times.inject(0) { |ac, i| ac + (v1a[i] - m1) * (v2a[i] - m2) }
         end
 
-        def compute_stats method
+        def compute_stats(method)
           Daru::Vector.new(
             numeric_vectors.each_with_object({}) do |vec, hash|
               hash[vec] = self[vec].send(method)
             end, name: method
           )
         end
-        alias :sds :std
-        alias :variance :variance_sample
+        alias sds std
+        alias variance variance_sample
       end
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Daru
   module ArrayHelper
     module_function
@@ -23,7 +25,7 @@ module Daru
       array.collect do |n|
         if counter.key?(n)
           counter[n] += 1
-          new_n = '%s_%d' % [n, counter[n]]
+          new_n = format('%s_%d', n, counter[n])
           n.is_a?(Symbol) ? new_n.to_sym : new_n
         else
           n

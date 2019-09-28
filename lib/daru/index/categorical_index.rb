@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Daru
   class CategoricalIndex < Index
     # Create a categorical index object.
@@ -6,7 +8,7 @@ module Daru
     # @example
     #   Daru::CategoricalIndex.new [:a, 1, :a, 1, :c]
     #   # => #<Daru::CategoricalIndex(5): {a, 1, a, 1, c}>
-    def initialize indexes
+    def initialize(indexes)
       # Create a hash to map each category to positional indexes
       categories = indexes.each_with_index.group_by(&:first)
       @cat_hash = categories.map { |cat, group| [cat, group.map(&:last)] }.to_h
@@ -29,7 +31,7 @@ module Daru
     # Returns true index or category is valid
     # @param index [object] the index value to look for
     # @return [true, false] true if index is included, false otherwise
-    def include? index
+    def include?(index)
       @cat_hash.include? index
     end
 
@@ -50,7 +52,7 @@ module Daru
     #   x = Daru::CategoricalIndex.new [:a, 1, :a, 1, :c]
     #   x.pos :a, 1
     #   # => [0, 1, 2, 3]
-    def pos *indexes
+    def pos(*indexes)
       positions = indexes.map do |index|
         if include? index
           @cat_hash[index]
@@ -73,7 +75,7 @@ module Daru
     #   idx = Daru::CategoricalIndex.new [:a, :b, :a, :b, :c]
     #   idx.index_from_pos 1
     #   # => :b
-    def index_from_pos pos
+    def index_from_pos(pos)
       cat_from_int @array[pos]
     end
 
@@ -85,6 +87,7 @@ module Daru
     #   # => [:a, :a, :b]
     def each
       return enum_for(:each) unless block_given?
+
       @array.each { |pos| yield cat_from_int pos }
       self
     end
@@ -98,7 +101,7 @@ module Daru
     #   b = Daru::CategoricalIndex.new [:b, :a, :a]
     #   a == b
     #   # => false
-    def == other
+    def ==(other)
       self.class == other.class &&
         size == other.size &&
         to_h == other.to_h
@@ -152,7 +155,7 @@ module Daru
     #   idx = Daru::CategoricalIndex.new [:a, :b, :a, :b, :c]
     #   idx.subset :a, :b
     #   # => #<Daru::CategoricalIndex(4): {a, b, a, b}>
-    def subset *indexes
+    def subset(*indexes)
       positions = pos(*indexes)
       new_index = positions.map { |pos| index_from_pos pos }
 
@@ -167,7 +170,7 @@ module Daru
     #   idx = Daru::CategoricalIndex.new [:a, :b, :a, :b, :c]
     #   idx.at 0, 1
     #   # => #<Daru::CategoricalIndex(2): {a, b}>
-    def at *positions
+    def at(*positions)
       positions = preprocess_positions(*positions)
       validate_positions(*positions)
       if positions.is_a? Integer
@@ -184,17 +187,17 @@ module Daru
     #   idx = Daru::CategoricalIndex.new [:a, :b, :a, :b, :c]
     #   idx.add :d
     #   # => #<Daru::CategoricalIndex(6): {a, b, a, b, c, d}>
-    def add *indexes
+    def add(*indexes)
       Daru::CategoricalIndex.new(to_a + indexes)
     end
 
     private
 
-    def int_from_cat cat
+    def int_from_cat(cat)
       @cat_hash.keys.index cat
     end
 
-    def cat_from_int cat
+    def cat_from_int(cat)
       @cat_hash.keys[cat]
     end
   end

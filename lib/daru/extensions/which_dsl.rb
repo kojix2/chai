@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Support for a simple query DSL for accessing where(), inspired by gem "squeel"
 
 module Daru
@@ -40,9 +42,9 @@ module Daru
       {
         :== => :eq,
         :!= => :not_eq,
-        :<  => :lt,
+        :< => :lt,
         :<= => :lteq,
-        :>  => :mt,
+        :> => :mt,
         :>= => :mteq,
         :=~ => :in
       }.each do |opt, method|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Daru
   module IO
     module CSV

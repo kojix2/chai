@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Daru
   # @private
   module IRuby
@@ -20,7 +22,7 @@ module Daru
       # It does [:a, nil, nil, :b, nil, :c] # =>
       #         [[:a,3], nil, nil, [:b,2], nil, :c]
       # Needed by tuples_with_colspans/rowspans, which we need for pretty HTML
-      def nils_counted array
+      def nils_counted(array)
         grouped = [[array.first]]
         array[1..-1].each do |val|
           if val
@@ -29,9 +31,9 @@ module Daru
             grouped.last << val
           end
         end
-        grouped.flat_map { |items|
+        grouped.flat_map do |items|
           [[items.first, items.count], *[nil] * (items.count - 1)]
-        }
+        end
       end
     end
   end
