@@ -92,7 +92,9 @@ module Daru
       def verify_start_and_end(start, en)
         raise ArgumentError, 'Start and end cannot be the same' if start == en
         raise ArgumentError, 'Start must be lesser than end'    if start > en
-        raise ArgumentError, 'Only same time zones are allowed' if start.zone != en.zone
+        if start.zone != en.zone
+          raise ArgumentError, 'Only same time zones are allowed'
+        end
       end
 
       def infer_offset(data)
@@ -103,7 +105,9 @@ module Daru
 
       def find_index_of_date(data, date_time)
         searched = data.bsearch { |d| d[0] >= date_time }
-        raise(ArgumentError, "Cannot find #{date_time}") if searched.nil? || searched[0] != date_time
+        if searched.nil? || searched[0] != date_time
+          raise(ArgumentError, "Cannot find #{date_time}")
+        end
 
         searched[1]
       end
@@ -554,7 +558,9 @@ module Daru
 
     def _shift(distance)
       if distance.is_a?(Integer)
-        raise IndexError, 'To lag non-freq date time index pass an offset.' unless @offset
+        unless @offset
+          raise IndexError, 'To lag non-freq date time index pass an offset.'
+        end
 
         start = @data[0][0]
         off = distance > 0 ? @offset : -@offset

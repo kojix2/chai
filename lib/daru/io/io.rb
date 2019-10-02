@@ -246,8 +246,12 @@ module Daru
         headers, headers_size = html_scrape_tag(table, 'th')
         data, size = html_scrape_tag(table, 'td')
         data = data.keep_if { |x| x.count == size }
-        order, indice = html_parse_hash(headers, size, headers_size) if headers_size >= size
-        return unless (indice.nil? || indice.count == data.count) && !order.nil? && order.count > 0
+        if headers_size >= size
+          order, indice = html_parse_hash(headers, size, headers_size)
+        end
+        unless (indice.nil? || indice.count == data.count) && !order.nil? && order.count > 0
+          return
+        end
 
         { data: data.compact, index: indice, order: order }
       end

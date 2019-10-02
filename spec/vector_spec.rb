@@ -2089,10 +2089,6 @@ describe Daru::Vector do
   end
 
   context 'on wrong dtypes' do
-    it 'should not accept mdarray' do
-      expect { Daru::Vector.new([], dtype: :mdarray) }.to raise_error(NotImplementedError)
-    end
-
     it 'should not accept anything else' do
       expect { Daru::Vector.new([], dtype: :kittens) }.to raise_error(ArgumentError)
     end

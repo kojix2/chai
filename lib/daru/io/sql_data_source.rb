@@ -75,7 +75,9 @@ module Daru
         (query = String.try_convert(query)) ||
           raise(ArgumentError, "Query must be a string, #{query.class} received")
 
-        db = attempt_sqlite3_connection(db) if db.is_a?(String) && Pathname(db).exist?
+        if db.is_a?(String) && Pathname(db).exist?
+          db = attempt_sqlite3_connection(db)
+        end
 
         case db
         when DBI::DatabaseHandle

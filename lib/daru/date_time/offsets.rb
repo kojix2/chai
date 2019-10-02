@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Daru
-
   # Generic class for generating date offsets.
   class DateOffset
     # A Daru::DateOffset object is created by a passing certain options
@@ -389,6 +388,4 @@ module Daru
       years: Year
     }.freeze
   end
-
-  # rubocop:enable Style/OpMethod
 end

@@ -579,7 +579,9 @@ module Daru
     # +vectors_to_clone+ - Names of vectors to clone. Optional. Will return
     # a view of the whole data frame otherwise.
     def clone(*vectors_to_clone)
-      vectors_to_clone.flatten! if ArrayHelper.array_of?(vectors_to_clone, Array)
+      if ArrayHelper.array_of?(vectors_to_clone, Array)
+        vectors_to_clone.flatten!
+      end
       vectors_to_clone = @vectors.to_a if vectors_to_clone.empty?
 
       h = vectors_to_clone.map { |vec| [vec, self[vec]] }.to_h
@@ -1055,7 +1057,9 @@ module Daru
 
     # Delete a vector
     def delete_vector(vector)
-      raise IndexError, "Vector #{vector} does not exist." unless @vectors.include?(vector)
+      unless @vectors.include?(vector)
+        raise IndexError, "Vector #{vector} does not exist."
+      end
 
       @data.delete_at @vectors[vector]
       @vectors = Daru::Index.new @vectors.to_a - [vector]
@@ -1074,7 +1078,9 @@ module Daru
     def delete_row(index)
       idx = named_index_for index
 
-      raise IndexError, "Index #{index} does not exist." unless @index.include? idx
+      unless @index.include? idx
+        raise IndexError, "Index #{index} does not exist."
+      end
 
       @index = Daru::Index.new(@index.to_a - [idx])
       each_vector do |vector|
@@ -1802,7 +1808,9 @@ module Daru
     #   #      5          1        nil
 
     def sort!(vector_order, opts = {})
-      raise ArgumentError, 'Required atleast one vector name' if vector_order.empty?
+      if vector_order.empty?
+        raise ArgumentError, 'Required atleast one vector name'
+      end
 
       # To enable sorting with categorical data,
       # map categories to integers preserving their order
@@ -1864,7 +1872,9 @@ module Daru
     #   #     [:bar]         18         26
     #   #     [:foo]         10         12
     def pivot_table(opts = {})
-      raise ArgumentError, 'Specify grouping index' if Array(opts[:index]).empty?
+      if Array(opts[:index]).empty?
+        raise ArgumentError, 'Specify grouping index'
+      end
 
       index               = opts[:index]
       vectors             = opts[:vectors] || []
@@ -2655,7 +2665,9 @@ module Daru
 
     def validate_vector_sizes
       @data.each do |vector|
-        raise IndexError, 'Expected vectors with equal length' if vector.size != @size
+        if vector.size != @size
+          raise IndexError, 'Expected vectors with equal length'
+        end
       end
     end
 

@@ -849,7 +849,9 @@ module Daru
       keys = @index.pos(*keys) unless by_position
 
       sub_vect = at(*keys)
-      sub_vect = Daru::Vector.new([sub_vect]) unless sub_vect.is_a?(Daru::Vector)
+      unless sub_vect.is_a?(Daru::Vector)
+        sub_vect = Daru::Vector.new([sub_vect])
+      end
 
       sub_vect
     end
@@ -922,7 +924,9 @@ module Daru
     end
 
     def to_s
-      "#<#{self.class}#{': ' + @name.to_s if @name}(#{size})#{':category' if category?}>"
+      "#<#{self.class}#{': ' + @name.to_s if @name}(#{size})#{if category?
+                                                                ':category'
+                                                              end}>"
     end
 
     # Create a summary of the Vector
@@ -1493,8 +1497,7 @@ module Daru
 
       new_vector =
         case dtype
-        when :array   then Daru::Accessors::ArrayWrapper.new(source, self)
-        when :mdarray then raise NotImplementedError, 'MDArray not yet supported.'
+        when :array then Daru::Accessors::ArrayWrapper.new(source, self)
         else raise ArgumentError, "Unknown dtype #{dtype}"
         end
 

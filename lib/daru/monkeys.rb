@@ -32,14 +32,6 @@ class Hash
   alias dv daru_vector
 end
 
-class MDArray
-  def daru_vector(name = nil, index = nil, *)
-    Daru::Vector.new self, name: name, index: index, dtype: :mdarray
-  end
-
-  alias dv daru_vector
-end
-
 class Matrix
   def elementwise_division(other)
     map.with_index do |e, index|

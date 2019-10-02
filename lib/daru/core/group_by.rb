@@ -49,7 +49,9 @@ module Daru
           new_index = group_map.flat_map { |group, values| values.map { |val| group + [val] } }
           new_index = Daru::MultiIndex.from_tuples(new_index)
 
-          return Daru::DataFrame.new({}, index: new_index) if remaining_vectors == []
+          if remaining_vectors == []
+            return Daru::DataFrame.new({}, index: new_index)
+          end
 
           new_rows_order = group_map.values.flatten
           new_df = df[*remaining_vectors].to_df.get_sub_dataframe(new_rows_order, by_position: from_position)

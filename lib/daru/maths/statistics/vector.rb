@@ -107,7 +107,9 @@ module Daru
           #   dv.max_by(2) { |i| i.size }
           #   #=> ["Jon Starkgaryen","Daenerys"]
           def max_by(size = nil, &block)
-            raise ArgumentError, 'Expected compulsory object block in max_by method' unless block_given?
+            unless block_given?
+              raise ArgumentError, 'Expected compulsory object block in max_by method'
+            end
 
             reject_values(*Daru::MISSING_VALUES).to_a.max_by(size, &block)
           end
@@ -150,7 +152,9 @@ module Daru
           #   dv.min_by(2) { |i| i.size }
           #   #=> ["Tyrion","Daenerys"]
           def min_by(size = nil, &block)
-            raise ArgumentError, 'Expected compulsory object block in min_by method' unless block_given?
+            unless block_given?
+              raise ArgumentError, 'Expected compulsory object block in min_by method'
+            end
 
             reject_values(*Daru::MISSING_VALUES).to_a.min_by(size, &block)
           end
@@ -194,7 +198,9 @@ module Daru
           #   dv.max_by(2) { |i| i.size }
           #   #=> ["Jon Starkgaryen","Daenerys"]
           def max_by(size = nil, &block)
-            raise ArgumentError, 'Expected compulsory object block in max_by method' unless block_given?
+            unless block_given?
+              raise ArgumentError, 'Expected compulsory object block in max_by method'
+            end
 
             reject_values(*Daru::MISSING_VALUES).to_a.sort_by(&block).reverse[size.nil? ? 0 : (0..size - 1)]
           end
@@ -241,7 +247,9 @@ module Daru
           #   dv.min_by(2) { |i| i.size }
           #   #=> ["Tyrion","Daenerys"]
           def min_by(size = nil, &block)
-            raise ArgumentError, 'Expected compulsory object block in min_by method' unless block_given?
+            unless block_given?
+              raise ArgumentError, 'Expected compulsory object block in min_by method'
+            end
 
             reject_values(*Daru::MISSING_VALUES).to_a.sort_by(&block)[size.nil? ? 0 : (0..size - 1)]
           end

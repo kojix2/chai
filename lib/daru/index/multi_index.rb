@@ -83,9 +83,15 @@ module Daru
       labels = opts[:labels]
       levels = opts[:levels]
 
-      raise ArgumentError, 'Must specify both labels and levels' unless labels && levels
-      raise ArgumentError, 'Labels and levels should be same size' if labels.size != levels.size
-      raise ArgumentError, 'Incorrect labels and levels' if incorrect_fields?(labels, levels)
+      unless labels && levels
+        raise ArgumentError, 'Must specify both labels and levels'
+      end
+      if labels.size != levels.size
+        raise ArgumentError, 'Labels and levels should be same size'
+      end
+      if incorrect_fields?(labels, levels)
+        raise ArgumentError, 'Incorrect labels and levels'
+      end
 
       @labels = labels
       @levels = levels.map { |e| e.map.with_index.to_h }
@@ -219,7 +225,9 @@ module Daru
 
       key.each_with_index do |k, depth|
         level_index = @levels[depth][k]
-        raise IndexError, "Specified index #{key.inspect} do not exist" if level_index.nil?
+        if level_index.nil?
+          raise IndexError, "Specified index #{key.inspect} do not exist"
+        end
 
         label = @labels[depth]
         chosen = find_all_indexes label, level_index, chosen
@@ -274,14 +282,18 @@ module Daru
       "(say level 'i') then put empty string on index 'i' of the 'name' Array."
 
       raise SizeError, error_msg if names.size > levels.size
-      raise SizeError, [error_msg, suggestion_msg].join("\n") if names.size < levels.size
+      if names.size < levels.size
+        raise SizeError, [error_msg, suggestion_msg].join("\n")
+      end
     end
 
     private :find_all_indexes, :multi_index_from_multiple_selections,
             :retrieve_from_range, :retrieve_from_tuples, :validate_name
 
     def key(index)
-      raise ArgumentError, "Key #{index} is too large" if index >= @labels[0].size
+      if index >= @labels[0].size
+        raise ArgumentError, "Key #{index} is too large"
+      end
 
       @labels
         .each_with_index
