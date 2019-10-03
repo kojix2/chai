@@ -1715,7 +1715,7 @@ module Daru
     # Generate a summary of this DataFrame based on individual vectors in the DataFrame
     # @return [String] String containing the summary of the DataFrame
     def summary
-      summary = "= #{name}"
+      summary = "= #{name}".dup # frozen string
       summary << "\n  Number of rows: #{nrows}"
       @vectors.each do |v|
         summary << "\n  Element:[#{v}]\n"
