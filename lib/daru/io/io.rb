@@ -41,7 +41,7 @@ module Daru
       # Functions for loading/writing Excel files.
 
       def from_excel(path, opts = {})
-        optional_gem 'spreadsheet', '~>1.1.1'
+        optional_gem 'spreadsheet'
         opts = {
           worksheet_id: 0
         }.merge opts
@@ -177,7 +177,7 @@ module Daru
       end
 
       def from_html(path, opts)
-        optional_gem 'mechanize', '~>2.7.5'
+        optional_gem 'mechanize'
         page = Mechanize.new.get(path)
         page.search('table').map { |table| html_parse_table table }
             .keep_if { |table| html_search table, opts[:match] }
@@ -188,8 +188,8 @@ module Daru
 
       private
 
-      def optional_gem(name, version)
-        gem name, version
+      def optional_gem(name)
+        gem name
         require name
       rescue LoadError
         Daru.error "\nInstall the #{name} gem version #{version} for using"\
