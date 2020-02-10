@@ -124,7 +124,9 @@ module Daru
     #   dv.count
     #   # => 5
     def count(category = UNDEFINED)
-      return @cat_hash.values.map(&:size).inject(&:+) if category == UNDEFINED # count all
+      if category == UNDEFINED
+        return @cat_hash.values.map(&:size).inject(&:+)
+      end # count all
       raise ArgumentError, "Invalid category #{category}" unless
         categories.include?(category)
 
