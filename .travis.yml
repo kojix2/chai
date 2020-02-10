@@ -3,6 +3,7 @@ language:
 
 rvm:
   - 2.6
+  - 2.7
 
 script:
   - gem install bundler
